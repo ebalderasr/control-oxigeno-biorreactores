@@ -239,7 +239,13 @@ def fig_criterios(seg, t0, y0, yinf, tg, sk, sm, ruta, vertical=False):
     yy = seg["pO2"].to_numpy()
     dy = yinf - y0
     if vertical:
-        fig, ax = plt.subplots(3, 1, figsize=(7.5, 8.6), sharex=True)
+        fig, paneles = plt.subplots(4, 1, figsize=(7.5, 10.2), sharex=True,
+                                   gridspec_kw={"height_ratios": [1, 1, 1, 0.55]})
+        ax = paneles[:3]
+        paneles[3].step(tt, seg["STIR"], where="post", color=C_STIR)
+        paneles[3].axvline(0, color=C_TXT2, lw=0.8, ls="--")
+        paneles[3].set(ylabel="Agitación [rpm]", yticks=[200, 500], ylim=(150, 550),
+                       xlabel="Tiempo desde el escalón [s]")
     else:
         fig, ax = plt.subplots(1, 3, figsize=(13, 4.4), sharey=True)
     for a in ax:
@@ -252,7 +258,7 @@ def fig_criterios(seg, t0, y0, yinf, tg, sk, sm, ruta, vertical=False):
     for a in (ax if vertical else ax[:1]):
         a.set_ylabel("pO₂ [%sat]")
     if vertical:
-        for a in ax[:-1]:
+        for a in ax:
             a.set_xlabel("")
 
     # Ziegler-Nichols: tangente

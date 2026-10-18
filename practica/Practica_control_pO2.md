@@ -1,27 +1,35 @@
 ---
-title: "Sintonización semiempírica del control de oxígeno disuelto en un biorreactor"
+title: "Afinación del control de oxígeno disuelto en un biorreactor"
 autor: "Emiliano Balderas · Instituto de Biotecnología, UNAM"
 ---
 
-**Taller:** Dinámica y control de reactores · **Duración:** máximo 45 min por equipo (3 equipos de 6 personas, uno tras otro en el mismo biorreactor) · **Equipo:** Sartorius Biostat B, vasija de 8 L
+**Taller:** Afinación del control de oxígeno disuelto en un biorreactor
+
+**Duración:** máximo 45 min por equipo (3 equipos de 6 personas, uno tras otro en el mismo biorreactor)
+
+**Equipo:** Sartorius Biostat B, vasija de 8 L
 
 
 # 1. ¿Qué es el control y por qué importa en bioprocesos?
 
-Las células necesitan condiciones adecuadas para crecer y producir: temperatura, pH y oxígeno disuelto, entre otras. Esas condiciones cambian durante el cultivo; por ejemplo, al aumentar la cantidad de células puede aumentar el consumo de oxígeno. **Controlar un bioproceso significa medir una variable, compararla con el valor deseado y hacer ajustes para mantenerla cerca de ese valor.** Esto ayuda a cuidar el cultivo, obtener resultados reproducibles y reducir la variación entre lotes.
+Las células necesitan condiciones adecuadas para crecer y producir: temperatura, pH y oxígeno disuelto, entre otras. Esas condiciones cambian durante el cultivo; por ejemplo, al aumentar la cantidad de células puede aumentar el consumo de oxígeno.
+
+**Controlar un bioproceso significa** medir una variable, compararla con el valor deseado y hacer ajustes para mantenerla cerca de ese valor. Esto ayuda a cuidar el cultivo, obtener resultados reproducibles y reducir la variación entre lotes.
 
 Pensemos en el oxígeno disuelto: una sonda lo mide y el controlador decide si debe aumentar o disminuir la agitación. Así ajusta la entrada de oxígeno al líquido según lo que necesita el proceso. No controla directamente a las células, sino las condiciones de su entorno.
 
 | Elemento | Qué significa | En esta práctica |
 |---|---|---|
 | Variable controlada ($y$) | Lo que queremos mantener | Oxígeno disuelto, indicado como $pO_2$ (% de saturación) |
-| Consigna o setpoint ($SP$) | El valor que queremos alcanzar | 80 % de saturación, si es alcanzable en la prueba |
+| Setpoint ($SP$) | El valor que queremos alcanzar | 80 % de saturación, si es alcanzable en la prueba |
 | Error ($e$) | Cuánto falta para llegar: $e = SP - y$ | Si queremos 80 % y medimos 75 %, el error es +5 puntos porcentuales |
 | Variable manipulada ($u$) | Lo que podemos ajustar | Agitación (rpm: revoluciones por minuto) |
 | Perturbación | Un cambio que afecta la variable controlada | Mayor consumo de oxígeno por las células |
 | Controlador | El que calcula el ajuste a partir de la medición | El controlador de la torre Biostat B |
 
-En **modo manual (`MAN`, lazo abierto)**, una persona fija la agitación. En **modo automático (`AUTO`, lazo cerrado)**, el controlador compara continuamente la medición con la consigna y ajusta la agitación. El aire permanecerá fijo durante toda la práctica.
+En **modo manual (`MAN`, lazo abierto)**, una persona fija la agitación.
+
+En **modo automático (`AUTO`, lazo cerrado)**, el controlador compara continuamente la medición con el setpoint y ajusta la agitación. El aire permanecerá fijo durante toda la práctica.
 
 # 2. Un tipo de controlador: el PID
 
@@ -29,7 +37,7 @@ Un controlador muy utilizado es el **PID**, llamado así por sus acciones propor
 
 | Acción | Pregunta que responde | Qué aporta |
 |---|---|---|
-| **P: proporcional** | ¿Qué tan lejos estoy del valor deseado ahora? | Corrige más cuando el error es mayor. Por sí sola puede dejar una diferencia persistente con la consigna. |
+| **P: proporcional** | ¿Qué tan lejos estoy del valor deseado ahora? | Corrige más cuando el error es mayor. Por sí sola puede dejar una diferencia persistente con el SP. |
 | **I: integral** | ¿Cuánto error se ha acumulado? | Sigue ajustando cuando la diferencia persiste y ayuda a eliminarla. Una acción demasiado fuerte puede causar oscilaciones. |
 | **D: derivativa** | ¿Qué tan rápido está cambiando el error? | Puede ayudar a frenar una respuesta excesiva, pero también amplifica el ruido de la medición. |
 
@@ -39,11 +47,11 @@ Un controlador muy utilizado es el **PID**, llamado así por sus acciones propor
 
 La idea es una suma: **salida = valor base + corrección P + corrección I + corrección D**. Una forma habitual de escribirla es:
 
-$$u(t) = u_0 + K_c\,e(t) + \frac{K_c}{T_I}\int_0^t e(\xi)\,d\xi + K_c\,T_D\,\frac{de(t)}{dt}$$
+$$u(t) = u_0 + K_c\,e(t) + \frac{K_c}{T_I}\int_0^t e(t)\,dt + K_c\,T_D\,\frac{de(t)}{dt}$$
 
 No hace falta resolver integrales ni derivadas para realizar la práctica. Basta con leer cada parte:
 
-- $u(t)$ es la salida que calcula el controlador en ese momento; $u_0$ es su valor base.
+- $u(t)$ es la salida que calcula el controlador en ese momento.
 - $e(t)$ es el error actual. El término $K_c\,e(t)$ es la corrección **P**: multiplicar el error por una ganancia.
 - El símbolo $\int$ significa **acumular el error con el tiempo**. El término que lo contiene es la corrección **I**.
 - $de/dt$ significa **qué tan rápido cambia el error**. El último término es la corrección **D**; al usar PI lo omitimos ($T_D = 0$).
@@ -52,7 +60,7 @@ Las constantes son $K_c$ (ganancia), $T_I$ (tiempo integral) y $T_D$ (tiempo der
 
 ## Afinar el controlador: el propósito de esta práctica
 
-**Afinar o sintonizar** significa encontrar valores adecuados para esas constantes. Un ajuste demasiado intenso puede hacer que la agitación y el oxígeno oscilen; uno demasiado suave puede tardar demasiado en corregir. Buscamos una respuesta útil para el cultivo y el equipo.
+**Afinar** significa encontrar valores adecuados para esas constantes. Un ajuste demasiado intenso puede hacer que la agitación y el oxígeno oscilen; uno demasiado suave puede tardar demasiado en corregir. Buscamos una respuesta útil para el cultivo y el equipo.
 
 Una forma de empezar es usar **métodos semiempíricos**: reglas que otros ingenieros han desarrollado a lo largo de los años combinando modelos sencillos con observaciones de procesos reales. Medimos cómo responde nuestro reactor a un cambio conocido y usamos esa información en las reglas. El resultado es un ajuste inicial que después debemos comprobar en automático, no una garantía de comportamiento perfecto.
 
@@ -60,7 +68,7 @@ Una forma de empezar es usar **métodos semiempíricos**: reglas que otros ingen
 
 # 3. Objetivo de la práctica
 
-Obtener la **curva de reacción** del oxígeno disuelto ($pO_2$) ante un escalón en la agitación, sacar de ella un modelo sencillo y usarlo para calcular los parámetros de un controlador PI con un método semiempírico. Después se comprueba en el equipo cómo responde el lazo cerrado. Participan **3 equipos de 6 personas**, con **45 minutos como máximo por equipo**. El aire se mantiene en **0.5 vvm (2.5 L/min para 5 L de líquido)** en todas las etapas; vvm significa litros de gas por litro de líquido por minuto.
+Obtener la curva de reacción del oxígeno disuelto ($pO_2$) ante un escalón en la agitación, sacar de ella un modelo sencillo y usarlo para calcular los parámetros de un controlador PI con un método semiempírico. Después se comprueba en el equipo cómo responde el lazo cerrado. Participan 3 equipos de 6 personas, con 45 minutos como máximo por equipo. El aire se mantiene en 0.5 vvm (2.5 L/min para 5 L de líquido) en todas las etapas; vvm significa litros de gas por litro de líquido por minuto.
 
 Cada equipo usa un método distinto y al final se comparan los tres:
 
@@ -87,21 +95,25 @@ Cada equipo usa un método distinto y al final se comparan los tres:
 
 # 5. La curva de reacción del proceso
 
-La **curva de reacción** es la respuesta de la variable controlada a un escalón en la variable manipulada **con el controlador desconectado** (lazo abierto, modo `MAN`). Es la "huella dinámica" del proceso: muestra cuánto cambia la salida, cuánto tarda en empezar a cambiar y qué tan rápido llega a su nuevo valor. Ziegler y Nichols (1942) propusieron sintonizar controladores a partir de esta sola prueba, sin necesidad de un modelo teórico; por eso estos métodos se llaman *semiempíricos*.
+La curva de reacción es la respuesta de la variable controlada a un escalón en la variable manipulada con el controlador desconectado (lazo abierto, modo `MAN`). Es la "huella dinámica" del proceso: muestra cuánto cambia la salida, cuánto tarda en empezar a cambiar y qué tan rápido llega a su nuevo valor. Ziegler y Nichols (1942) propusieron sintonizar controladores a partir de esta sola prueba, sin necesidad de un modelo teórico; por eso estos métodos se llaman *semiempíricos*.
 
 En esta práctica:
 
-- **Variable manipulada ($u$):** agitación, de 200 a 500 rpm.
-- **Variable controlada ($y$):** $pO_2$ en % de saturación.
+- Variable manipulada ($u$): agitación, de 200 a 500 rpm.
+- Variable controlada ($y$): $pO_2$ en % de saturación.
+
+![Escalón de agitación: de 200 a 500 rpm en el instante cero](../figuras/04_escalon_agitacion.png)
+
+La línea vertical marca el cambio de agitación. Antes del instante cero mantenemos 200 rpm; después mantenemos 500 rpm mientras medimos el oxígeno. Este dibujo muestra el cambio que ordenamos en MAN; la respuesta del oxígeno se observa después.
 
 Para que la curva sea útil:
 
-1. El proceso debe estar **estable antes del escalón** ($pO_2$ estable).
-2. Se hace **un solo cambio**, de golpe, y no se toca nada más.
-3. Se espera hasta que la salida llegue a un **nuevo valor estable**.
+1. El proceso debe estar estable antes del escalón ($pO_2$ estable).
+2. Se hace un solo cambio, de golpe, y no se toca nada más.
+3. Se espera hasta que la salida llegue a un nuevo valor estable.
 4. El escalón debe ser lo bastante grande para verse claramente sobre el ruido, pero no tanto que el sistema salga de la zona de interés (aquí, entre ~65 y ~91 %).
 
-La curva se resume con un modelo de **primer orden con tiempo muerto (FOPDT)**:
+La curva se resume con un modelo de primer orden con tiempo muerto (FOPDT):
 
 No hace falta usar una función de transferencia: para esta actividad basta describir la curva con tres números.
 
@@ -109,7 +121,7 @@ No hace falta usar una función de transferencia: para esta actividad basta desc
 - $\theta$ (tiempo muerto): lo que tarda la señal en empezar a moverse. Incluye el mezclado y la respuesta de la sonda.
 - $\tau$ (constante de tiempo): una medida de la rapidez de la respuesta. En este modelo, tras el tiempo muerto, en un tiempo $\tau$ se recorre aproximadamente el 63 % del cambio total; no significa que ya haya terminado.
 
-Todos los equipos leen igual $y_0$, $y_\infty$ y $\Delta y = y_\infty - y_0$. **Lo que cambia entre métodos es cómo se leen $\theta$ y $\tau$** (sección 7).
+Todos los equipos leen igual $y_0$, $y_\infty$ y $\Delta y = y_\infty - y_0$. Lo que cambia entre métodos es cómo se leen $\theta$ y $\tau$ (sección 7).
 
 
 # 6. Antes de calcular: unidades y símbolos
@@ -188,14 +200,14 @@ $$K_{c,\text{norm}} = \frac{0.859}{K_{p,\text{norm}}}\left(\frac{\theta}{\tau}\r
 | 9–17 | **Escalón:** cambiar de 200 a 500 rpm y marcar $t_0$. Registrar pO₂ cada 10 s durante 3 min, luego cada 30 s hasta estabilizarse. Anotar $y_\infty$. | MAN 500 rpm |
 | 17–26 | Graficar y calcular $\Delta y$, $K_{p,\text{norm}}$, $\theta$, $\tau$, Xp y TI según el método del equipo. | MAN 500 rpm |
 | 26–28 | Revisar cálculos con el instructor. Introducir Xp y TI; TD = 0 s; Deadband = 1.5 %. | MAN 500 rpm |
-| 28–35 | **Prueba de consigna:** pasar a AUTO con SP = 80 % si es alcanzable. Registrar pO₂ y rpm cada 15 s; observar mínimo, oscilación y tiempo de entrada en la banda 80 ± 1.5 %. | AUTO |
-| 35–40 | **Segundo cambio de consigna:** si ya está estable, cambiar de 80 a 85 % solo si ambos valores son alcanzables. Registrar máximo y tiempo de entrada en 85 ± 1.5 %. Si no se estabilizó, continuar la primera observación. | AUTO |
+| 28–35 | **Prueba de setpoint:** pasar a AUTO con SP = 80 % si es alcanzable. Registrar pO₂ y rpm cada 15 s; observar mínimo, oscilación y tiempo de entrada en la banda 80 ± 1.5 %. | AUTO |
+| 35–40 | **Segundo cambio de setpoint:** si ya está estable, cambiar de 80 a 85 % solo si ambos valores son alcanzables. Registrar máximo y tiempo de entrada en 85 ± 1.5 %. Si no se estabilizó, continuar la primera observación. | AUTO |
 | 40–41 | Regresar a MAN 200 rpm para iniciar la recuperación antes del siguiente equipo. | MAN 200 rpm |
 | 41–45 | Completar la comparación y discutir resultados. | MAN 200 rpm |
 
-**El aire permanece fijo a 0.5 vvm (2.5 L/min) durante toda la actividad.** El segundo cambio es una prueba de seguimiento de consigna; no es una prueba de perturbación. El método ITAE se calcula con una regla diseñada para perturbaciones, pero aquí solo observamos su respuesta a cambios de consigna.
+**El aire permanece fijo a 0.5 vvm (2.5 L/min) durante toda la actividad.** El segundo cambio es una prueba de seguimiento de setpoint; no es una prueba de perturbación. El método ITAE se calcula con una regla diseñada para perturbaciones, pero aquí solo observamos su respuesta a cambios de setpoint.
 
-**¿Por qué 80 %?** En el piloto, a 200 rpm el oxígeno estaba cerca de 65 % y a 500 rpm cerca de 91 %. Por eso 80 % quedaba dentro del intervalo observado. Cada equipo debe verificar su propia curva: el cultivo cambia con el tiempo. No usar una consigna fuera del intervalo observado para estas pruebas.
+**¿Por qué 80 %?** En el piloto, a 200 rpm el oxígeno estaba cerca de 65 % y a 500 rpm cerca de 91 %. Por eso 80 % quedaba dentro del intervalo observado. Cada equipo debe verificar su propia curva: el cultivo cambia con el tiempo. No usar un setpoint fuera del intervalo observado para estas pruebas.
 
 **¿Qué significa 80 ± 1.5 %?** Una banda de observación de 78.5 a 81.5 % de saturación, es decir, ±1.5 puntos porcentuales. Se configura además Deadband = 1.5 %; el instructor debe comprobar cómo aplica esa zona muerta la versión de la DCU instalada.
 
@@ -257,11 +269,11 @@ $$K_{c,\text{norm}} = \frac{0.859}{K_{p,\text{norm}}}\left(\frac{\theta}{\tau}\r
 |---|---|---|---|
 | $\theta$ [s] / $\tau$ [s] / $K_{p,\text{norm}}$ | | | |
 | Xp [%] / TI [s] | | | |
-| Consigna: pO₂ mínimo al bajar a 80 % | | | |
-| Consigna: tiempo para quedar en 80 ± 1.5 % [s] | | | |
+| Setpoint: pO₂ mínimo al bajar a 80 % | | | |
+| Setpoint: tiempo para quedar en 80 ± 1.5 % [s] | | | |
 | ¿Oscila la agitación? | | | |
-| Segunda consigna: pO₂ máximo al subir a 85 % (si se realizó) | | | |
-| Segunda consigna: tiempo para entrar en 85 ± 1.5 % [s] | | | |
+| Segundo setpoint: pO₂ máximo al subir a 85 % (si se realizó) | | | |
+| Segundo setpoint: tiempo para entrar en 85 ± 1.5 % [s] | | | |
 
 
 # 12. Preguntas para la discusión
@@ -269,50 +281,86 @@ $$K_{c,\text{norm}} = \frac{0.859}{K_{p,\text{norm}}}\left(\frac{\theta}{\tau}\r
 1. **Misma curva, distintos números.** Los tres equipos obtuvieron un $\theta$ y un $\tau$ ligeramente distintos de curvas casi iguales. ¿De dónde viene la diferencia? ¿Cuál de las tres lecturas es más sensible a un error al leer la gráfica?
 2. **Xp contra Kc.** Un equipo introduce por error su $K_{c,\text{norm}}$ (por ejemplo 3) en el campo Xp. ¿El controlador queda más agresivo o más suave que lo calculado, y por cuánto?
 3. **El Span importa.** Si alguien supone Span = 600 rpm (cascada de 200 a 800) cuando en realidad es 1000 rpm, ¿su Xp sale más grande o más chico? ¿El controlador queda más agresivo o más suave?
-4. **Alcance de la comparación.** Con aire fijo solo probamos cambios de consigna. ¿Por qué estas observaciones no bastan para concluir qué método rechaza mejor un cambio en el consumo de oxígeno?
+4. **Alcance de la comparación.** Con aire fijo solo probamos cambios de setpoint. ¿Por qué estas observaciones no bastan para concluir qué método rechaza mejor un cambio en el consumo de oxígeno?
 5. **Células sensibles.** Si en lugar de levadura fueran células animales sensibles al esfuerzo de corte y a la espuma, ¿qué método elegirías y por qué?
 
 
 # Anexo para el instructor
 
-## Preparación del equipo
+## A. Preparar el reactor y el trabajo de los equipos
 
-- Cascada de pO₂: solo el agitador, $N_{\min} = 200$ rpm, $N_{\max} = 1200$ rpm. Si se cambia el máximo, actualizar el Span en la hoja de datos.
-- Aire fijo en 0.5 vvm (2.5 L/min).
-- Calibrar la sonda al 100 % con aire a 30 °C antes de inocular.
-- Rehidratar 15 g de levadura en ~100 mL de agua tibia (15 min) e inocular ~20 min antes del primer equipo. En la prueba piloto el pO₂ a 200 rpm bajó a ~69 % unos 9 min después de completar los 3 g/L.
+- **Configuración común:** 5 L de líquido, 30 °C y aire fijo a **0.5 vvm (2.5 L/min)** durante toda la actividad. Cascada de oxígeno con **solo agitación**, mínimo 200 y máximo 1200 rpm (Span = 1000 rpm). Verificar estos límites en pantalla antes de calcular.
+- **Preparación propuesta para el taller:** 10 g/L de azúcar (50 g en 5 L) y 3 g/L de levadura seca (15 g). Rehidratar la levadura unos 15 min en aproximadamente 100 mL de agua tibia e inocular unos 20 min antes del primer equipo. Calibrar previamente la sonda al 100 % con aire a 30 °C.
+- **Antes de cada escalón:** MAN a 200 rpm, oxígeno estable y registro activo. Mantener fijos aire, temperatura y composición durante la medición. Revisar que la agitación efectivamente pase a 500 rpm.
+- **Entre equipos:** volver a MAN 200 rpm en el minuto 40. La recuperación observada tardó al menos 10 min; la explicación del siguiente equipo puede aprovechar parte de ese tiempo, pero no sustituye verificar estabilidad. Prever una pausa si hace falta.
 
-## Resultados de la prueba piloto (14 oct 2026)
+## B. Qué se hizo el 14 de octubre de 2026
 
-Mismas condiciones (5 g/L de azúcar), dos escalones 200 → 500 rpm en el mismo lote con ~30 min de diferencia. Span = 1000 rpm. Datos limpios en `datos_limpios/`, cálculo completo en `fopdt_sartorius.py`.
+Se registraron dos escalones de **200 a 500 rpm** en el mismo lote, separados aproximadamente 30 min, en la hoja `B1.20261014.2` del Excel. Las notas del piloto indican **5 g/L de azúcar**; la preparación propuesta arriba usa 10 g/L. Por tanto, no presentar el piloto como una repetición con condiciones idénticas al taller. Verificar la concentración del día y anotarla.
 
-| | Escalón 1 | Escalón 2 |
+El cultivo evolucionó entre escalones: el oxígeno inicial bajó de 68.8 a 65.7 %. Cada equipo debe obtener su propio valor inicial y final. Las cifras siguientes son referencias para revisar cálculos o trabajar con el piloto cuando no alcance el tiempo para obtener una curva completa.
+
+![Registro del 14 de octubre: oxígeno disuelto y agitación durante los dos escalones y las pruebas posteriores](../figuras/05_piloto_14oct_registro.png)
+
+En esta gráfica se muestran las mediciones originales de oxígeno y agitación. El registro disponible no contiene el modo MAN/AUTO, el setpoint ni los parámetros Xp/TI: las variaciones posteriores a cada escalón deben interpretarse junto con las notas de operación, sin asignarles automáticamente un método.
+
+![Los dos escalones del 14 de octubre alineados: respuesta de oxígeno arriba y agitación medida abajo](../figuras/06_piloto_14oct_escalones.png)
+
+Ambas curvas comienzan en el instante en que cambia la agitación. Aunque el oxígeno inicial cambia, el incremento total es parecido: 23.2 y 25.3 puntos porcentuales. El escalón de 300 rpm representa 30 % de salida con el Span de 1000 rpm usado en el recálculo.
+
+## C. Ajustes recalculados para cada método
+
+Estos resultados se obtuvieron **después del piloto**, leyendo las curvas con los criterios de la sección 7 y convirtiendo la ganancia con **Span = 1000 rpm**. Proceden del bloque `por_metodo` de los archivos de `resultados/`; los bloques `modelos` comparan otras estimaciones y no son los valores asignados a cada equipo.
+
+| Lectura o ajuste | Escalón 1 | Escalón 2 |
 |---|---|---|
-| $y_0$ / $y_\infty$ [%] | 68.8 / 92.0 | 65.7 / 90.9 |
-| $\Delta y$ [%] / $K_{p,\text{norm}}$ | 23.2 / 0.77 | 25.3 / 0.84 |
-| **Z-N** (tangente): θ / τ | 18 s / 96 s | 18 s / 85 s |
-| → Xp / TI | **16.5 % / 61 s** | **19.7 % / 60 s** |
-| **SIMC** (inicio + 63 %): θ / τ | 16 s / 77 s | 16 s / 68 s |
-| → Xp / TI | **31.9 % / 77 s** | **38.6 % / 68 s** |
-| **ITAE** (Smith): θ / τ | 22 s / 71 s | 22 s / 61 s |
-| → Xp / TI | **28.0 % / 47 s** | **35.7 % / 45 s** |
+| Oxígeno inicial / final [%] | 68.8 / 92.0 | 65.7 / 90.9 |
+| Cambio de oxígeno [puntos] / $K_{p,\text{norm}}$ | 23.2 / 0.77 | 25.3 / 0.84 |
+| Z-N: $\theta$ / $\tau$ [s] | 18 / 96 | 18 / 85 |
+| **Z-N: Xp [%] / TI [s]** | **16.5 / 61** | **19.7 / 60** |
+| SIMC: $\theta$ / $\tau$ [s] | 16 / 77 | 16 / 68 |
+| **SIMC: Xp [%] / TI [s]** | **31.9 / 77** | **38.6 / 68** |
+| ITAE: $\theta$ / $\tau$ [s] | 22 / 71 | 22 / 61 |
+| **ITAE: Xp [%] / TI [s]** | **28.0 / 47** | **35.7 / 45** |
 
-**Qué esperar:** Z-N da el Xp más chico (el más agresivo, con TI medio); SIMC y ITAE dan Xp parecidos, pero ITAE tiene un TI mucho más corto (acción integral más fuerte). SIMC debería ser el más suave.
+En todos los casos: **TD = 0 s** y **Deadband = 1.5 %**. No reutilizar sin comprobar los valores de Xp si cambió la configuración de la cascada.
 
-**Lo que se observó en lazo cerrado durante la prueba (SP = 80 %):**
+![Lectura del segundo escalón del piloto para los tres métodos](../figuras/12_B1.20261014.2_escalon2_criterios_vertical.png)
 
-- Xp = 10 %, TI = 80 s: oscilación sostenida de pO₂ (~79–81.6 %), con la agitación subiendo y bajando entre 200 y ~500 rpm. Es unas 2 veces más agresivo que Z-N.
-- Xp = 18 %, TI = 120 s, Deadband 1.5 %: se estabilizó en ~79 % con agitación constante (~307 rpm). Tiene una ganancia parecida a la de Z-N, pero con acción integral más lenta.
+### Qué revisar para que cada cálculo tenga sentido
 
-> Ojo: en la prueba piloto estos valores se calcularon estimando $\tau \approx t_s/4$ (~110–118 s) en lugar de leerlo de la curva, y con Span = 600 rpm. Con la lectura correcta, $\tau$ es de 60–95 s según el método. No usar Xp = 18 % / TI = 120 s como "respuesta correcta" de SIMC.
+| Método | Comprobación de la lectura | Cómo interpretar su ajuste |
+|---|---|---|
+| **Ziegler–Nichols** | Trazar la tangente sobre el tramo de subida más pronunciado, evitando elegir un salto aislado de ruido. Medir $\theta$ desde el escalón al cruce inferior; $\tau$ es la separación entre los dos cruces. | Dio el Xp más pequeño: una corrección proporcional más intensa. Vigilar oscilación y límites de rpm. |
+| **SIMC** | Usar el inicio visible (umbral de 0.5 puntos sobre $y_0$) y el tiempo al 63.2 % del cambio. Restar el tiempo muerto para obtener $\tau$. El umbral es una aproximación didáctica y es sensible al ruido. | Aquí se eligió $\tau_c = \theta$. Un $\tau_c$ mayor en la regla general reduce la ganancia y permite un arranque más suave; recalcular también TI si se cambia esa elección. |
+| **ITAE para perturbaciones** | Leer 28.3 % y 63.2 % **del cambio total**, no 28.3 y 63.2 % de saturación. Ambos tiempos parten del escalón. Revisar potencias y que $\theta$ resulte positivo. | Dio un TI más corto que SIMC: la corrección integral es más rápida. Su objetivo original son perturbaciones; los cambios de setpoint del taller no verifican ese objetivo. |
 
-## Cosas a vigilar
+**Ejemplo de revisión, segundo escalón:** $\Delta y = 25.26$ puntos y $K_{p,\text{norm}} = 25.26/30 = 0.842$. Para ITAE, los niveles son aproximadamente 72.80 y 81.62 % de saturación, alcanzados a 42.21 y 83.04 s. Así, $\tau = 1.5(83.04-42.21) = 61.25$ s y $\theta = 83.04-61.25 = 21.79$ s. La regla da $K_{c,\text{norm}} = 2.80$, por lo que Xp = 35.7 % y TI = 45.0 s.
 
-- **El cultivo cambia con el tiempo:** en la prueba, el pO₂ de reposo a 200 rpm bajó de 69 a 66 % en 30 min y a 63 % una hora después; el pH bajó de 5.8 a 4.5. Cada equipo verá una planta un poco distinta; por eso cada uno obtiene su propia curva.
-- **Si el pO₂ de reposo sube de repente** a 200 rpm, probablemente se acabó el azúcar: agregar 25 g y esperar a que se estabilice.
-- **La bajada del pO₂ al volver a 200 rpm es lenta** (≥ 10 min). Por eso cada equipo deja el reactor en 200 rpm al terminar y el siguiente empieza con 6 min de explicación.
-- **El tiempo muerto (~15–22 s) es apenas 3–4 veces el intervalo de registro** del equipo (5 s); anotar a mano cada 10 s es suficiente, pero un error de una lectura cambia θ en ±5 s.
+## D. Qué se probó realmente en automático
 
+Las notas de operación del 14 de octubre reportan estos ajustes con **SP = 80 %**:
+
+| Ajuste introducido | Observación anotada | Qué permite concluir |
+|---|---|---|
+| Xp = 10 %, TI = 80 s | Oscilación sostenida de oxígeno (aprox. 79–81.6 %) y agitación entre 200 y unas 500 rpm. | Ese ajuste produjo oscilación en aquellas condiciones. |
+| Xp = 18 %, TI = 120 s, Deadband = 1.5 % | Oxígeno cerca de 79 % y agitación aproximadamente constante en 307 rpm. | Ese ajuste resultó más estable en esa prueba. Estar cerca de 79 % es compatible con la banda de observación alrededor de 80 %. |
+
+**Estos dos ajustes no equivalen a probar los tres métodos de la tabla anterior.** Durante la sesión se usaron estimaciones preliminares de $\tau$ a partir del tiempo de estabilización ($\tau \approx t_s/4$) y un Span supuesto de 600 rpm. El recálculo posterior usa las lecturas de las curvas y Span = 1000 rpm. Por eso **Xp = 18 %, TI = 120 s no debe presentarse como el resultado de SIMC**, ni como una validación experimental de los ajustes recalculados.
+
+Con el mismo TI y configuración, bajar Xp aumenta la acción proporcional; con el mismo Xp, bajar TI acelera la acción integral. Entre los dos ajustes ensayados cambiaron ambos parámetros, de modo que no puede atribuirse toda la diferencia a uno solo.
+
+## E. Cómo comprobar y corregir el ajuste durante el taller
+
+1. **Revisar antes de AUTO:** escala de oxígeno, Span real, conversión $X_p = 100/K_{c,\text{norm}}$, TI en segundos, TD = 0 y setpoint alcanzable. Si la salida aumenta, la agitación debe aumentar; en esta zona de operación se espera que eso eleve el oxígeno.
+2. **Empezar por el ajuste calculado y registrar qué se introdujo.** Observar oxígeno y rpm juntos. Registrar tiempo de entrada en la banda, si permanece ahí y si la agitación oscila o se mantiene en un límite. No prometer que una regla garantiza estabilidad.
+3. **Si hay oscilación sostenida:** volver a MAN si no conviene continuar. Revisar primero curva, ruido, unidades y saturación. Para una nueva prueba más suave se puede aumentar Xp o aumentar TI; cambiar un parámetro a la vez, anotar el nuevo valor y dejar tiempo para observar. Es una corrección posterior, distinta del resultado original del método.
+4. **Si responde demasiado lento:** descartar primero setpoint inalcanzable, límite de agitación o cultivo todavía cambiante. Si el problema es el ajuste, reducir Xp o TI con el instructor, de uno en uno. Mantener el aire fijo.
+5. **Si queda pegado en 200 o 1200 rpm:** comprobar si la agitación disponible basta para llegar al setpoint. Una salida limitada no se resuelve simplemente aumentando la ganancia. Si faltan minutos, documentar la limitación y cerrar la prueba.
+
+**Aspectos del piloto que afectan la lectura:** el pH bajó aproximadamente de 5.8 a 4.5 y el oxígeno a 200 rpm siguió descendiendo con el tiempo. El intervalo automático fue de unos 5 s: con registro manual cada 10 s, la incertidumbre al leer un tiempo muerto de 15–22 s es apreciable. No exigir que la lectura manual reproduzca los decimales del análisis computacional.
+
+Si el oxígeno inicial sube inesperadamente, revisar agitación, aire, sonda y estado del cultivo. El agotamiento del azúcar es una posibilidad, no una conclusión basada solo en la señal de oxígeno. Cualquier adición cambia las condiciones: anotarla y esperar un nuevo estado estable antes de repetir el escalón.
 
 # Nota final: de las constantes del PI a los campos del Sartorius Biostat
 

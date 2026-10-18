@@ -1,4 +1,4 @@
-"""Genera Practica_control_pO2.docx con la plantilla del XI SLATCC 2026.
+"""Genera Practica_control_pO2.docx con la plantilla y la presentación del taller.
 
 Uso:
     .venv/bin/python practica/generar_word.py
@@ -232,8 +232,9 @@ def tablas(doc):
 def figuras(doc, ancho_cm=14):
     for forma in doc.inline_shapes:
         proporcion = forma.height / forma.width
-        forma.width = Cm(ancho_cm)
-        forma.height = int(Cm(ancho_cm) * proporcion)
+        ancho = 12.5 if proporcion > 1.2 else ancho_cm
+        forma.width = Cm(ancho)
+        forma.height = int(Cm(ancho) * proporcion)
 
 
 def saltos_de_pagina(doc, inicios=("10. Hoja de datos", "Anexo para el instructor")):
@@ -241,6 +242,25 @@ def saltos_de_pagina(doc, inicios=("10. Hoja de datos", "Anexo para el instructo
     for p in doc.paragraphs:
         if p.style.style_id == "Heading1" and p.text.startswith(inicios):
             p.paragraph_format.page_break_before = True
+
+
+def presentacion(doc):
+    """Conserva el texto justificado del Word editado y centra figuras y ecuaciones."""
+    for p in doc.paragraphs:
+        if p.style.style_id == "Title":
+            continue
+        p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        if p._p.xpath(".//w:drawing") or p._p.xpath(".//m:oMathPara"):
+            p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.paragraph_format.keep_with_next = bool(p._p.xpath(".//w:drawing"))
+        if p.style.name == "Image Caption":
+            p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.paragraph_format.keep_with_next = False
+    for t in doc.tables:
+        for row in t.rows:
+            for cell in row.cells:
+                for p in cell.paragraphs:
+                    p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
 
 def main():
@@ -254,6 +274,7 @@ def main():
     tablas(doc)
     figuras(doc)
     saltos_de_pagina(doc)
+    presentacion(doc)
     doc.save(SALIDA)
     print(f"Listo: {SALIDA}")
 

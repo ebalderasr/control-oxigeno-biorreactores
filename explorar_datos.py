@@ -147,11 +147,65 @@ def fig_escalones(df, t0s, antes=150, despues=600):
     plt.close(fig)
 
 
+def fig_escalon_didactico():
+    """Orden ideal de agitación en MAN; no representa una simulación del oxígeno."""
+    fig, ax = plt.subplots(figsize=(9, 3.2))
+    ax.step([-60, 0, 300], [200, 500, 500], where="post", color=C_STIR, lw=2.6)
+    ax.axvline(0, color=C_TXT2, ls=":", lw=1)
+    ax.annotate("Antes: 200 rpm", (-35, 200), xytext=(-35, 245), ha="center", color=C_TXT2)
+    ax.text(160, 530, "Después: mantener 500 rpm", ha="center", color=C_TXT2)
+    ax.annotate("Δu = 300 rpm", xy=(22, 500), xytext=(22, 200), va="center",
+                arrowprops=dict(arrowstyle="<->", color=C_TXT2), color=C_TXT2)
+    ax.set(xlim=(-60, 300), ylim=(100, 600), yticks=[200, 500],
+           xlabel="Tiempo desde el escalón [s] · t = 0: cambio de agitación",
+           ylabel="Agitación [rpm]", title="Cambio que aplicamos en modo manual: 200 → 500 rpm")
+    fig.tight_layout()
+    fig.savefig(FIGS / "04_escalon_agitacion.png")
+    plt.close(fig)
+
+
+def fig_piloto_instructor(df, t0s, ventanas):
+    """Mediciones del piloto; sin asignar modos o ajustes que no registra el Excel."""
+    fig, axes = plt.subplots(2, 1, figsize=(10, 5.4), sharex=True)
+    axes[0].plot(df["t"] / 60, df["pO2"], color=C_PO2)
+    axes[1].plot(df["t"] / 60, df["STIR"], color=C_STIR)
+    for k, (t0, (_, fin)) in enumerate(zip(t0s, ventanas), 1):
+        for ax in axes:
+            ax.axvspan(t0 / 60, fin / 60, alpha=0.10, color=C_PO2)
+            ax.axvline(t0 / 60, ls=":", color=C_TXT2, lw=0.8)
+        axes[0].text((t0 + fin) / 120, 96, f"Escalón {k}", ha="center", fontsize=9)
+    axes[0].set(ylabel="Oxígeno disuelto [% sat.]", ylim=(55, 100))
+    axes[1].set(ylabel="Agitación [rpm]", xlabel="Tiempo desde el inicio del registro [min]")
+    fig.suptitle("Piloto del 14 de octubre de 2026 · mediciones de oxígeno y agitación")
+    fig.tight_layout()
+    fig.savefig(FIGS / "05_piloto_14oct_registro.png")
+    plt.close(fig)
+
+    fig, axes = plt.subplots(2, 1, figsize=(9, 5.6), sharex=True)
+    for k, t0 in enumerate(t0s, 1):
+        seg = df[(df["t"] >= t0 - 60) & (df["t"] <= t0 + 450)]
+        color = [C_PO2, C_STIR][(k - 1) % 2]
+        axes[0].plot(seg["t"] - t0, seg["pO2"], color=color, label=f"Escalón {k}")
+        axes[1].step(seg["t"] - t0, seg["STIR"], where="post", color=color,
+                     ls="-" if k == 1 else "--", label=f"Escalón {k}")
+    for ax in axes:
+        ax.axvline(0, color=C_TXT2, ls=":", lw=0.8)
+        ax.legend(frameon=False)
+    axes[0].set(ylabel="Oxígeno disuelto [% sat.]")
+    axes[1].set(ylabel="Agitación medida [rpm]", yticks=[200, 500], ylim=(150, 550),
+                xlabel="Tiempo desde el escalón [s]", xlim=(-60, 450))
+    fig.suptitle("Piloto del 14 de octubre · dos escalones alineados en t = 0")
+    fig.tight_layout()
+    fig.savefig(FIGS / "06_piloto_14oct_escalones.png")
+    plt.close(fig)
+
+
 def main():
     FIGS.mkdir(exist_ok=True)
     nombres = pd.ExcelFile(ARCHIVO).sheet_names
     hojas = {n: cargar(ARCHIVO, n) for n in nombres}
     fig_resumen(hojas)
+    fig_escalon_didactico()
 
     df = hojas["B1.20261014.2"]
     t0s = detectar_escalones(df)
@@ -171,6 +225,7 @@ def main():
     fig_principal(df, t0s, ventanas, estados)
     fig_escalones(df, t0s)
     fig_accesoria(df, t0s, ventanas)
+    fig_piloto_instructor(df, t0s, ventanas)
 
 
 if __name__ == "__main__":

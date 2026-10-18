@@ -5,7 +5,7 @@ Material en español para comprender y ajustar el control de oxígeno disuelto e
 La actividad está organizada para **3 equipos de 6 personas**, con **45 minutos como máximo por equipo**. Compara ajustes PI mediante Ziegler–Nichols, SIMC e ITAE. El aire permanece fijo a **0.5 vvm**; se modifica la agitación y se comprueba la respuesta a cambios de consigna.
 
 - [Guía de la práctica](practica/Practica_control_pO2.md)
-- [Documento Word](practica/Practica_control_pO2.docx)
+- [Documento Word](practica/Practica_control_pO2.docx) y [PDF](practica/Practica_control_pO2.pdf)
 - [Datos originales](fermentador%20B1%20levadura.xlsx), [datos procesados](datos_limpios/) y [resultados](resultados/)
 - [Figuras](figuras/)
 
