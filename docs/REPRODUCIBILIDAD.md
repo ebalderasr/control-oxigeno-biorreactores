@@ -1,6 +1,10 @@
 # Reproducción y mantenimiento del proyecto
 
-Este material se preparó para el **SLATCC**, cuyo sitio es [www.slatcc.com](https://www.slatcc.com/). El propósito es apoyar el taller de afinación del control de oxígeno disuelto con una explicación accesible, datos de un piloto y cálculos que puedan revisarse.
+| Simposio | Curso avanzado |
+|:---:|:---:|
+| [![XI Simposio Latinoamericano de Tecnología de Cultivos Celulares](imagenes/Simposio_portada.png)](https://www.slatcc.com/) | [![Curso Avanzado de Tecnologías de Cultivo Celular 2026](imagenes/Curso_portada.png)](https://www.slatcc.com/) |
+
+Material educativo para el **SLATCC**: [www.slatcc.com](https://www.slatcc.com/). Esta guía describe cómo reproducir el análisis y mantener los materiales del taller **“Afinación del control de oxígeno disuelto en un biorreactor”**.
 
 ## Estructura
 
@@ -61,6 +65,8 @@ El detector busca transiciones de **200 a 500 rpm**. Para otros escalones hay qu
 
 El análisis recorta una ventana alrededor de cada escalón, estima los valores inicial y final y aplica un filtro Savitzky–Golay para ayudar a leer la dinámica. Usa una aproximación de primer orden con tiempo muerto (FOPDT), con ganancia del proceso, constante de tiempo y tiempo muerto. Las curvas deben representar una respuesta ascendente, suficientemente completa y con parámetros positivos; revisar visualmente esos supuestos antes de interpretar los resultados.
 
+## Interpretar los resultados
+
 ### Salidas
 
 Cada ejecución de `fopdt_sartorius.py` escribe archivos con la hoja y el número de escalón en el nombre; repetirla sobrescribe sus salidas.
@@ -110,3 +116,11 @@ La alineación y el tamaño de imágenes pertenecen al generador de Word: el Mar
 Conservar separados los datos originales, los resultados calculados y las observaciones de operación. Registrar cualquier cambio de cultivo, azúcar, escala de oxígeno o límites de agitación. Mantener explícita la diferencia entre los ajustes preliminares ensayados el 14 de octubre y los valores recalculados posteriormente.
 
 El entorno virtual, las configuraciones locales, los respaldos locales y los archivos temporales de edición se excluyen mediante `.gitignore`. Para cambios solo de documentación basta revisar enlaces, comandos y coherencia con el código; no es necesario regenerar los datos ni sobrescribir los documentos editados.
+
+## Identidad visual y materiales relacionados
+
+Los archivos `docs/imagenes/Simposio_portada.png` y `docs/imagenes/Curso_portada.png` son copias de las portadas proporcionadas para el simposio y el curso. Se conservan con sus nombres y sin modificaciones. Son recursos de documentación, separados de las figuras generadas por el análisis. El README y esta guía usan rutas relativas para que los logos se vean tanto en GitHub como en una copia local.
+
+La presentación de Word y PDF se obtiene de `plantilla_documento.docx`. Para cambios solo de documentación no es necesario regenerar datos ni sobrescribir documentos editados. Si se actualizan los logos de la serie, sustituir las copias en ambos repositorios para mantener la misma identidad visual.
+
+Taller complementario: [Respuesta de sensores en bioprocesos](https://github.com/ebalderasr/respuesta-sensores-bioprocesos). Ambos repositorios usan la misma estructura de README y guía de reproducción, con instrucciones específicas para sus datos.
