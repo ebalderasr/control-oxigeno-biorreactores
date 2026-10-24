@@ -32,6 +32,10 @@ La guía contiene fundamentos accesibles, roles, procedimiento, hoja de datos y 
 | [Resultados](resultados/) | Parámetros y métricas calculados, con su contexto |
 | [Figuras](figuras/) | Registro experimental, escalón de RPM y lectura de las curvas |
 
+## Impresión
+
+La [guía para participantes](practica/Practica_control_pO2.pdf) incluye las instrucciones, cálculos y hoja de datos. Imprimir las copias necesarias. El [anexo para el instructor](practica/Anexo_instructor.pdf) se imprime una sola vez; también está disponible en [Word](practica/Anexo_instructor.docx) y [Markdown](practica/Anexo_instructor.md).
+
 ## Inicio rápido
 
 Desde la raíz del repositorio, con Python 3 instalado:
@@ -52,8 +56,7 @@ Los scripts generan o actualizan archivos en `datos_limpios/`, `resultados/` y `
 Se requieren **Pandoc** para generar Word y **LibreOffice** para exportar PDF desde la terminal:
 
 ```bash
-python practica/generar_word.py
-libreoffice --headless --convert-to pdf --outdir practica practica/Practica_control_pO2.docx
+python practica/generar_word.py --pdf
 ```
 
 El generador sobrescribe el Word a partir del Markdown. Si se editó el Word directamente, incorporar primero esos cambios a la fuente. Revisar visualmente el PDF después de generarlo. Los logos de esta página se conservan en `docs/imagenes/`; el formato de los documentos de la práctica procede de `plantilla_documento.docx`.
@@ -72,4 +75,4 @@ Los scripts están preparados para el formato de exportación y los datos inclui
 
 ## Autor
 
-**Emiliano Balderas · Instituto de Biotecnología, UNAM**.
+**Octavio T. Ramírez · Emiliano Balderas · Instituto de Biotecnología, UNAM**.

@@ -124,3 +124,7 @@ Los archivos `docs/imagenes/Simposio_portada.png` y `docs/imagenes/Curso_portada
 La presentación de Word y PDF se obtiene de `plantilla_documento.docx`. Para cambios solo de documentación no es necesario regenerar datos ni sobrescribir documentos editados. Si se actualizan los logos de la serie, sustituir las copias en ambos repositorios para mantener la misma identidad visual.
 
 Taller complementario: [Respuesta de sensores en bioprocesos](https://github.com/ebalderasr/respuesta-sensores-bioprocesos). Ambos repositorios usan la misma estructura de README y guía de reproducción, con instrucciones específicas para sus datos.
+
+## Documentos de impresión
+
+La guía de participantes y el anexo del instructor tienen fuentes separadas en `practica/Practica_control_pO2.md` y `practica/Anexo_instructor.md`. El generador produce ambos Word y, con `--pdf`, ambos PDF. Incorporar cualquier edición manual de Word a la fuente correspondiente antes de regenerar. La guía conserva el procedimiento experimental de Emiliano e incorpora el contexto teórico de OTR. La propuesta de integración está en `docs/PROPUESTA_INTEGRACION_OTR.md`.
